@@ -1,26 +1,34 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+import time
 
+x = input("Enter job keyword: ")
 
-x=input("Enter: ")
+role, comp, loc = [], [], []
 
-role,comp,loc=[],[],[]
-driver_path = "C:/chromedriver.exe"
-chr_options = Options()
-chr_options.add_experimental_option("detach", True)
-driver = webdriver.Chrome(driver_path, options=chr_options)
+options = Options()
+options.add_experimental_option("detach", True)
 
-driver.get("https://www.linkedin.com/jobs/search/?currentJobId=3389978895&keywords={}".format(x))
+# Automatically use correct ChromeDriver
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-srchresu=driver.find_elements(By.CSS_SELECTOR,".two-pane-serp-page__results")    
-for i in srchresu:
-    lst=i.find_elements(By.CSS_SELECTOR,".base-search-card__info")
-    for i in lst:
-        role.append(i.find_element(By.CSS_SELECTOR,".base-search-card__title").text)
-        comp.append(i.find_element(By.CSS_SELECTOR,".base-search-card__subtitle").text)
-        loc.append(i.find_element(By.CSS_SELECTOR,".job-search-card__location").text)
+driver.get(f"https://www.linkedin.com/jobs/search/?keywords={x}")
+time.sleep(5)
 
-for i in range(0,len(role)):
-    print(role[i]+"----"+comp[i]+"----"+loc[i])
+results_container = driver.find_elements(By.CSS_SELECTOR, ".two-pane-serp-page__results")
+
+for container in results_container:
+    job_cards = container.find_elements(By.CSS_SELECTOR, ".base-search-card__info")
+    for job in job_cards:
+        try:
+            role.append(job.find_element(By.CSS_SELECTOR, ".base-search-card__title").text.strip())
+            comp.append(job.find_element(By.CSS_SELECTOR, ".base-search-card__subtitle").text.strip())
+            loc.append(job.find_element(By.CSS_SELECTOR, ".job-search-card__location").text.strip())
+        except:
+            continue
+
+for i in range(len(role)):
+    print(f"{role[i]} ---- {comp[i]} ---- {loc[i]}")
