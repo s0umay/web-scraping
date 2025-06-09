@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import pandas as pd
 
 x = input("Enter job keyword: ")
 
@@ -32,3 +33,7 @@ for container in results_container:
 
 for i in range(len(role)):
     print(f"{role[i]} ---- {comp[i]} ---- {loc[i]}")
+
+#dict={'role':role,'company':comp,'location':loc}
+#df=pd.DataFrame(dict)
+#df.to_csv('csvfile1')
